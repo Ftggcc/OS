@@ -1,0 +1,158 @@
+#include <iostream>
+
+#include <vector>
+
+#include <algorithm>
+
+#include <climits>
+
+using namespace std;
+
+struct Process {
+
+int arrival;
+
+int burst;
+
+int index;
+
+};
+
+bool compareArrival(Process a, Process b) {
+
+return a.arrival < b.arrival;
+
+}
+
+void sjf_p(int n, Process p[], int wait[], int tat[]) {
+
+int time = 0, completed = 0;
+
+vector<int> remainingBurst(n);
+
+vector<int> arrivalTimes(n);
+
+vector<int> waitTimes(n);
+
+vector<int> turnaroundTimes(n);
+
+vector<bool> isCompleted(n, false);
+
+for (int i = 0; i < n; i++) {
+
+remainingBurst[i] = p[i].burst;
+
+arrivalTimes[i] = p[i].arrival;
+
+}
+
+while (completed < n) {
+
+int idx = -1;
+
+int minRemaining = INT_MAX;
+
+for (int i = 0; i < n; i++) {
+
+if (arrivalTimes[i] <= time && !isCompleted[i] && remainingBurst[i] < minRemaining) {
+
+minRemaining = remainingBurst[i];
+
+idx = i;
+
+}
+
+}
+
+if (idx != -1) {
+
+remainingBurst[idx]--;
+
+if (remainingBurst[idx] == 0) {
+
+isCompleted[idx] = true;
+
+completed++;
+
+tat[idx] = time + 1 - arrivalTimes[idx];
+
+wait[idx] = tat[idx] - p[idx].burst;
+
+}
+
+}
+
+time++;
+
+}
+
+}
+
+float average(int n,int arr[]){
+
+int sum=0;
+
+float avg;
+
+for(int i=0;i<n;i++){
+
+sum=sum+arr[i];
+
+}
+
+avg=(float)sum/n;
+
+return avg;
+
+}
+
+int main() {
+
+int n;
+
+cout << "\nEnter the number of processes:\n";
+
+cin >> n;
+
+Process p[n];
+
+int wait[n], tat[n];
+
+cout << "\nEnter the process Arrival and Service time:\n";
+
+for (int i = 0; i < n; i++) {
+
+cout << "\nProcess " << i + 1 << " Arrival Time: ";
+
+cin >> p[i].arrival;
+
+cout << "Process " << i + 1 << " Service Time: ";
+
+cin >> p[i].burst;
+
+p[i].index = i;
+
+}
+
+sort(p, p + n, compareArrival);
+
+sjf_p(n, p, wait, tat);
+
+cout << "\nProcess\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\n";
+
+for (int i = 0; i < n; i++) {
+
+cout << p[i].index + 1 << "\t" << p[i].arrival << "\t\t" << p[i].burst
+
+<< "\t\t" << wait[i] << "\t\t" << tat[i] << endl;
+
+}
+
+cout << "\nAverage TAT = " << average(n, tat);
+
+cout << "\nAverage WT = " << average(n, wait);
+
+return 0;
+
+}
+
