@@ -1,0 +1,161 @@
+a=1
+
+while [ $a -eq 1 ]
+
+do
+
+    echo -e "\n***MENU*"
+
+    echo -e "\n1. Create Address Book\n2. Display Address Book\n3. Insert Record\n4. Delete Record\n5. Modify a Record\n6. Exit"
+
+    echo -e "\nEnter your choice:"
+
+    read ch
+
+
+
+    case $ch in
+
+        1)  # Create address book
+
+            echo -e "\nEnter Address Book Name:"
+
+            read fname
+
+            touch "$fname"
+
+            echo -e "\nFile created successfully."
+
+            ;;
+
+        #-----------------------------------
+
+        2)  # Display address book
+
+            if [ -s "$fname" ]
+
+            then
+
+                echo -e "ID\tName\tRoll No\tCity\n"
+
+                cat "$fname"
+
+            else
+
+                echo -e "\nFile is empty."
+
+            fi
+
+            ;;
+
+        #-----------------------------------
+
+        3)  # Insert record
+
+            echo -e "\nEnter the ID:"
+
+            read id
+
+            echo -e "\nEnter the Name:"
+
+            read name
+
+            echo -e "\nEnter the Roll No:"
+
+            read roll
+
+            echo -e "\nEnter the City:"
+
+            read city
+
+
+
+            echo -e "$id\t$name\t$roll\t$city" >> "$fname"
+
+            echo -e "\nRecord inserted successfully."
+
+            ;;
+
+        #-----------------------------------
+
+        4)  # Delete record
+
+            echo -e "\nEnter the record name you want to delete:"
+
+            read dname
+
+            sed -i "/$dname/d" "$fname"
+
+            if [ $? -eq 0 ]
+
+            then
+
+                echo -e "\nRecord deleted successfully."
+
+            else
+
+                echo -e "\nSuch record does not exist."
+
+            fi
+
+            ;;
+
+        #-----------------------------------
+
+        5)  # Modify record
+
+            echo -e "\nEnter the name of the record you want to modify:"
+
+            read old
+
+            grep "$old" "$fname"
+
+            if [ $? -eq 0 ]
+
+            then
+
+                line=$(grep -n "$old" "$fname" | cut -d: -f1)
+
+                echo -e "\nEnter the modified record (ID, Name, Roll No, City):"
+
+                read newid newname newroll newcity
+
+                sed -i "${line}s/.*/$newid\t$newname\t$newroll\t$newcity/" "$fname"
+
+                echo -e "\nModification successful."
+
+            else
+
+                echo -e "\nSuch record does not exist."
+
+            fi
+
+            ;;
+
+        #-----------------------------------
+
+        6)  # Exit
+
+            echo -e "\nExited successfully."
+
+            exit 0
+
+            ;;
+
+        #-----------------------------------
+
+        *)  # Invalid option
+
+            echo -e "\nInvalid option."
+
+            ;;
+
+    esac
+
+
+
+    echo -e "\nDo you want to continue? (0-No / 1-Yes)"
+
+    read a
+
+done
